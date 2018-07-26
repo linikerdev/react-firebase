@@ -5,21 +5,23 @@ import Login from './Login'
 import Register from './Register'
 import Home from './Home'
 import Dashboard from './protected/Dashboard'
+import notAuthorizated from './notAuthorizated'
 import { logout } from '../helpers/auth'
 import { firebaseAuth } from '../config/constants'
 
-function PrivateRoute ({component: Component, authed, ...rest}) {
+function PrivateRoute({ component: Component, authed, ...rest }) {
   return (
     <Route
       {...rest}
       render={(props) => authed === true
         ? <Component {...props} />
-        : <Redirect to={{pathname: '/login', state: {from: props.location}}} />}
+        : <Route path={props.path} component={notAuthorizated} />}
+    // : <Redirect to={{pathname: '/login', state: {from: props.location}}} />}
     />
   )
 }
 
-function PublicRoute ({component: Component, authed, ...rest}) {
+function PublicRoute({ component: Component, authed, ...rest }) {
   return (
     <Route
       {...rest}
@@ -35,7 +37,7 @@ export default class App extends Component {
     authed: false,
     loading: true,
   }
-  componentDidMount () {
+  componentDidMount() {
     this.removeListener = firebaseAuth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({
@@ -50,7 +52,7 @@ export default class App extends Component {
       }
     })
   }
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.removeListener()
   }
   render() {
@@ -72,15 +74,15 @@ export default class App extends Component {
                 <li>
                   {this.state.authed
                     ? <button
-                        style={{border: 'none', background: 'transparent'}}
-                        onClick={() => {
-                          logout()
-                        }}
-                        className="navbar-brand">Logout</button>
+                      style={{ border: 'none', background: 'transparent' }}
+                      onClick={() => {
+                        logout()
+                      }}
+                      className="navbar-brand">Logout</button>
                     : <span>
-                        <Link to="/login" className="navbar-brand">Login</Link>
-                        <Link to="/register" className="navbar-brand">Register</Link>
-                      </span>}
+                      <Link to="/login" className="navbar-brand">Login</Link>
+                      <Link to="/register" className="navbar-brand">Register</Link>
+                    </span>}
                 </li>
               </ul>
             </div>
